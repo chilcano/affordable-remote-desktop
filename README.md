@@ -1,6 +1,6 @@
 # Affordable Remote DevOps Desktop
 
-Terraform scripts to create an affordable remote development desktop hosted in a Public Cloud and trying to use affordable cloud resources ( &lt; 10 euros/month ).
+Terraform scripts to create an affordable remote development desktop hosted in AWS Public Cloud and trying to use affordable cloud resources ( &lt; 10 euros/month ).
 
 ## Components included
 
