@@ -17,14 +17,14 @@ Based on:
 
 DevOps Tooling | Installed | Version 
 ---            | ---       | ---
-1. Chromium    | Yes       | 80.0.3987.163
-2. VS Code     | Yes       | 1.43.2 
-3. Terraform   | Yes       | 0.12.24 
-4. AWS CLI     | Yes       | 1.14.44  
-5. Git         | Yes       | 2.17.1
-6. Python      | Yes       | 3.6.9 
-7. Java        | Yes       | ?
-8. Docker      | Yes       | 19.03.6
+1) Chromium    | Yes       | 80.0.3987.163
+2) VS Code     | Yes       | 1.43.2 
+3) Terraform   | Yes       | 0.12.24 
+4) AWS CLI     | Yes       | 1.14.44  
+5) Git         | Yes       | 2.17.1
+6) Python      | Yes       | 3.6.9 
+7) Java        | Yes       | ?
+8) Docker      | Yes       | 19.03.6
 
 
 ## ToDo
