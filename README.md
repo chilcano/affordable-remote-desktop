@@ -15,7 +15,7 @@ Based on:
    - m1.small (default)
    - us-east-1 (default)
 
-DevOps Tooling | Installed | Version 
+Tool           | Installed | Version 
 ---            | ---       | ---
 1) Chromium    | Yes       | 80.0.3987.163
 2) VS Code     | Yes       | 1.43.2 
