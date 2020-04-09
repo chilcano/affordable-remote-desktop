@@ -158,7 +158,7 @@ Below some screenshots if you want to know how looks like in Ubuntu 19.10.
 Before lets get the FQDN of EC2 instance.  
 
 ```sh
-chilcano@inti:~/git-repos/affordable-remote-devenv$ terraform output remotedevenv_fqdn
+chilcano@inti:~/git-repos/affordable-remote-destop$ terraform output remotedevenv_fqdn
 ec2-100-26-48-80.compute-1.amazonaws.com
 ```
 Before all, You have to wait ~20 minutes (yes, It is too much and I'm going to fix it - see ToDo) after `terraform apply`. Then, open X2Go Client and enter these details about your EC2 Instance.
