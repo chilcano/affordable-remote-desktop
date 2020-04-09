@@ -2,6 +2,8 @@
 
 Terraform scripts to create an affordable remote development desktop hosted in AWS Public Cloud and trying to use affordable cloud resources ( &lt; 10 euros/month ).
 
+![](imgs/remote-devops-desktop-x2go-client-0-arch.png)
+
 ## Components included
 
 ### AWS EC2 Instance
