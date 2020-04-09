@@ -42,8 +42,8 @@ Based on:
 ### Clone this repository
 
 ```sh
-$ git clone https://github.com/chilcano/affordable-remote-devops
-$ cd affordable-remote-devops
+$ git clone https://github.com/chilcano/affordable-remote-desktop
+$ cd affordable-remote-desktop
 ```
 
 ### Execute Terraform commands
