@@ -168,7 +168,7 @@ Before all, You have to wait ~20 minutes (yes, It is too much and I'm going to f
 
 And finally here below the Remote DevOps Desktop.
 ![](imgs/remote-devops-desktop-x2go-client-5.png)
-![](imgs/remote-devops-desktop-x2go-client-6.png)
+![](imgs/remote-devops-desktop-x2go-client-6b.png)
 
 
 ## Troubleshooting
