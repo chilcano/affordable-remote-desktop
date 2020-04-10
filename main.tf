@@ -162,7 +162,7 @@ resource "aws_iam_role" "ec2_iam_role" {
 EOF
 }
 
-resource "aws_iam_policy" "ec2_ebs_policy" {
+resource "awsi_am_policy" "ec2_ebs_policy" {
   name        = "${var.devenv_name}_instance_policy"
   path        = "/"
   description = "Policy for ${var.devenv_name} instance to allow dynamic provisioning of EBS persistent volumes"
@@ -231,8 +231,8 @@ resource "aws_spot_instance_request" "remotedevenv" {
   depends_on = ["aws_internet_gateway.main_gw"]
 
   tags {
-    Name = "${var.devenv_name}_remotedevenv"
-    Environment = "${var.devenv_name}"
+    Name = "${var.devenv_name}_spot_instance"
+    Environment = "${var.devenv_name}_spot_instance"
   }
 
   lifecycle {
