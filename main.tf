@@ -52,7 +52,7 @@ resource "aws_route_table_association" "public_route_table" {
   subnet_id = "${aws_subnet.public_subnet.id}"
   route_table_id = "${aws_route_table.gw_route_table.id}"
 }
-// ======================================================
+// ------------------------------------------------------
 
 // ======================================================
 // Security Group and its ingress/egress rules   
@@ -115,7 +115,7 @@ resource "aws_security_group_rule" "allow_all_out" {
 
   security_group_id = "${aws_security_group.sec_group.id}"
 }
-// ======================================================
+// ------------------------------------------------------
 
 // ======================================================
 // Uploading Bash Script as Template   
@@ -127,17 +127,7 @@ data "template_file" "remotedevenv_userdata_tpl" {
     instancename = "${var.devenv_name}"
   }
 }
-// ======================================================
-
-data "aws_ami" "latest_ami" {
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-instance/ubuntu-bionic-18.04-amd64-server-*"]
-  }
-
-  most_recent = true
-  owners      = ["099720109477"] # Ubuntu
-}
+// ------------------------------------------------------
 
 // ======================================================
 // IAM configuration      
@@ -210,11 +200,22 @@ resource "aws_iam_instance_profile" "iam_instance_profile" {
   name = "${var.devenv_name}_instance_profile"
   role = "${aws_iam_role.ec2_iam_role.name}"
 }
-// ======================================================
+// ------------------------------------------------------
 
 // ======================================================
 // EC2 Spot Instances (Remote Development Environment)
 // ======================================================
+
+data "aws_ami" "latest_ami" {
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-instance/ubuntu-bionic-18.04-amd64-server-*"]
+  }
+
+  most_recent = true
+  owners      = ["099720109477"] # Ubuntu
+}
+
 resource "aws_spot_instance_request" "remotedevenv" {
   ami                     = "${data.aws_ami.latest_ami.id}"
   instance_type           = "${var.remotedevenv_instance_type}"
@@ -239,3 +240,4 @@ resource "aws_spot_instance_request" "remotedevenv" {
     ignore_changes = ["ami"]
   }
 }
+// ------------------------------------------------------

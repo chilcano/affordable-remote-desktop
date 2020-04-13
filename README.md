@@ -31,11 +31,13 @@ Based on:
 
 ## ToDo
 
-1. Instead of using a standard Ubuntu AMI, prepare a custom AMI with pre-installed XFCE4 and X2Go (getting this EC2 instance created takes 25 minutes!), and moving all DevOps Tooling installation to other separate script.
-2. Use Ansible instead of Bash script to provision the DevOps tools such as VS Code, Java, Terraform, Git, etc.
-3. Backup and restoring of critical, sensitive information and custom configuration into AWS S3 or X2Go capabilities to mount remote disks over SSH.
-4. Vertical Autoscaling (increase RAM, CPU or change type of instance).
-5. Metrics (performance when using ADSL, WAN, 4G, etc.)
+See [Github issues tab](https://github.com/chilcano/affordable-remote-desktop/issues).
+
+1. Instead of using a standard Ubuntu AMI, prepare a custom AMI with pre-installed XFCE4 and X2Go (getting this EC2 instance created takes 25 minutes!), and moving all DevOps Tooling installation to other separate script. #1
+2. Use Ansible instead of Bash script to provision the DevOps tools such as VS Code, Java, Terraform, Git, etc. #2
+3. Backup and restoring of critical, sensitive information and custom configuration into AWS S3 or X2Go capabilities to mount remote disks over SSH. #3
+4. Vertical Autoscaling (increase RAM, CPU or change type of instance). #4
+5. Metrics (performance when using ADSL, WAN, 4G, etc.) #5
 
 ## Getting started
 
