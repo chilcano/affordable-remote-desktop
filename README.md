@@ -2,7 +2,7 @@
 
 Terraform scripts to create an affordable remote development desktop hosted in AWS Public Cloud and trying to use affordable cloud resources ( &lt; 10 euros/month ).
 
-![](imgs/remote-devops-desktop-x2go-client-0-arch.png)
+![](imgs/remote-devops-desktop-x2go-client-0-arch-packer.png)
 
 ## Components included
 
@@ -10,10 +10,12 @@ Terraform scripts to create an affordable remote development desktop hosted in A
 
 Based on:
 
-1. Ubuntu 18.04 server (`ubuntu/images/hvm-instance/ubuntu-bionic-18.04-amd64-server`)
+1. Ubuntu server AMI:
+   - AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and AMI Owner `Chilcano` (by default)
 2. [XFCE4 Desktop](https://www.xfce.org) (no install the [Xubuntu](https://xubuntu.org) Desktop packages).
 3. [X2Go](https://wiki.x2go.org)
-4. EC2 Spot Instance
+4. EC2 Instance
+   - Spot
    - m1.small (default)
    - us-east-1 (default)
 
@@ -25,7 +27,7 @@ Based on:
 | 4) AWS CLI     | Yes       | 1.14.44  
 | 5) Git         | Yes       | 2.17.1
 | 6) Python      | Yes       | 3.6.9 
-| 7) Java        | Yes       | ?
+| 7) Java        | Yes       | OpenJDK 11.0.6
 | 8) Docker      | Yes       | 19.03.6
 
 
@@ -42,34 +44,101 @@ $ git clone https://github.com/chilcano/affordable-remote-desktop
 $ cd affordable-remote-desktop
 ```
 
-### Execute Terraform commands
+### Execute Terraform plan using customized AMI (by default)
+
+By default, if you want a Remote DevOps Desktop on AWS in ~3 minutes, you should just run the next commands. This process uses my customized public AMI (Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and Owner `Chilcano`). This customized AMI with `XFCE4` and `X2Go Server` pre-installed has been created using Hashicorp Packer ([here I share the Packer scripts](resources/packer/)).
 
 ```sh
 $ terraform init
 
 $ terraform plan \
-  -var devenv_name="cheapdevenv" \
-  -var ssh_key="remotedevenv" \
+  -var node_name="devops1" \
+  -var ssh_key="remotedesktop" \
   -var developer_cidr_blocks="83.32.214.211/32" 
 
 $ terraform apply \
-  -var devenv_name="cheapdevenv" \
-  -var ssh_key="remotedevenv" \
+  -var node_name="devops1" \
+  -var ssh_key="remotedesktop" \
   -var developer_cidr_blocks="83.32.214.211/32" 
 ```
+
+### Execute Terraform plan providing a customized AMI (using Packer.io)
+
+The Terraform plan I share here detects if the base AMI used to build the EC2 Instance has `XFCE4` and `X2Go Server` pre-installed, if so Terraform will install both packages taking ~20 minutes more. For example, next Terraform plan execution will install both packages because the `ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server` AMI owned by `099720109477` (Ubuntu) doesn't include any GUI Desktop Environment installed.
+
+```sh
+$ terraform init
+
+$ terraform plan \
+  -var node_name="devops2" \
+  -var ssh_key="remotedesktop" \
+  -var developer_cidr_blocks="83.32.214.211/32" \
+  -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"\
+  -var ami_owner="099720109477" 
+
+$ terraform apply \
+  -var node_name="devops2" \
+  -var ssh_key="remotedesktop" \
+  -var developer_cidr_blocks="83.32.214.211/32" \
+  -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"\
+  -var ami_owner="099720109477" 
+```
+
+Finally, if you don't have any customized AMI with `XFCE4` and `X2Go Server` pre-installed, and you want one but `private`, then you are lucky because I've shared Packer scripts to cook your own. Then the steps are:
+
+1. Create your own private and customized AMI using Packer. You can [review the Packer scripts here](resources/packer/).
+   ```sh
+   $ cd affordable-remote-desktop/resources/packer
+   $ export AWS_ACCESS_KEY_ID="your-access-key-id"; export AWS_SECRET_ACCESS_KEY="your-secret-access-key"
+   $ export AWS_VPC_ID="your-vpc-id-07c2fc78af4aca574"; export AWS_SUBNET_ID="your-subnet-id-00096b5a3329dd4b2" 
+   $ packer validate ubuntu_gui.json
+   $ packer build ubuntu_gui.json
+   ```
+2. Provision your Remote DevOps Desktop on AWS using Terraform.
+   ```sh
+   $ terraform init
+   
+   $ terraform plan \
+     -var node_name="devops2" \
+     -var ssh_key="remotedesktop" \
+     -var developer_cidr_blocks="83.32.214.211/32" \
+     -var ami_name_filter="your-ami-name-filter"\
+     -var ami_owner="your-ami-owner" 
+   
+   $ terraform apply \
+     -var node_name="devops2" \
+     -var ssh_key="remotedesktop" \
+     -var developer_cidr_blocks="83.32.214.211/32" \
+     -var ami_name_filter="your-ami-name-filter"\
+     -var ami_owner="your-ami-owner" 
+   ```
 
 ### Verifying the process
 
 After a few minutes, connect to EC2 instance created above.
 
 ```sh
-$  terraform output remotedevenv_fqdn
+$  terraform output remotedesktop_fqdn
 ec2-54-160-183-171.compute-1.amazonaws.com
 
-$ ssh ubuntu@$(terraform output remotedevenv_fqdn) -i ~/.ssh/remotedevenv
+$ ssh ubuntu@$(terraform output remotedesktop_fqdn) -i ~/.ssh/remotedevenv
+
+// Checking Cloud-Init 
+ubuntu@ip-10-0-100-4:~$ tail -f /var/log/cloud-init-output.log
+
+// Checking the bash scripts created by Cloud-Init
+ubuntu@ip-10-0-100-4:~$ ls -la /var/lib/cloud/instance/scripts/
+total 16
+drwxr-xr-x 2 root root 4096 Apr 15 18:28 .
+drwxr-xr-x 5 root root 4096 Apr 15 18:35 ..
+-rwx------ 1 root root 2651 Apr 15 18:28 install_devops.sh
+-rwx------ 1 root root 1149 Apr 15 18:28 install_gui.sh
 ```
 
-#### Checking the software base
+The `install_devops.sh` and `install_gui.sh` were created by Terraform during provisioning, both bash scripts install and configure the DevOps tools and GUI tools respectively.
+
+
+__Checking the GUI tools installed__
 
 Immediately after you will get access to remote instance.
 
@@ -97,9 +166,10 @@ ubuntu@ip-10-0-100-4:~$ x2goversion
 : 3.5.99.22
 : 4.1.0.3
 ```
-#### Checking the DevOps tooling installed
 
-Tooling installed. You probably get different versions.
+__Checking the DevOps tools installed__
+
+You probably get different versions.
 
 ```sh
 ubuntu@ip-10-0-100-4:~$ chromium-browser --version
@@ -154,45 +224,39 @@ Below some screenshots if you want to know how looks like in Ubuntu 19.10.
 Before lets get the FQDN of EC2 instance.  
 
 ```sh
-chilcano@inti:~/git-repos/affordable-remote-destop$ terraform output remotedevenv_fqdn
+chilcano@inti:~/git-repos/affordable-remote-destop$ terraform output remotedesktop_fqdn
 ec2-100-26-48-80.compute-1.amazonaws.com
 ```
 Before all, You have to wait ~20 minutes (yes, It is too much and I'm going to fix it - see ToDo) after `terraform apply`. Then, open X2Go Client and enter these details about your EC2 Instance.
 
-![](imgs/remote-devops-desktop-x2go-client-1.png)
-![](imgs/remote-devops-desktop-x2go-client-2.png)
-![](imgs/remote-devops-desktop-x2go-client-3.png)
-![](imgs/remote-devops-desktop-x2go-client-4.png)
+<img src="imgs/remote-devops-desktop-x2go-client-1.png" width="40%">
+<img src="imgs/remote-devops-desktop-x2go-client-2.png" width="40%">
+<img src="imgs/remote-devops-desktop-x2go-client-3.png" width="40%">
+<img src="imgs/remote-devops-desktop-x2go-client-4.png" width="40%">
 
-And finally here below the Remote DevOps Desktop.
-![](imgs/remote-devops-desktop-x2go-client-5.png)
-![](imgs/remote-devops-desktop-x2go-client-6b.png)
+And finally here below the Remote DevOps Desktop.  
 
+<img src="imgs/remote-devops-desktop-x2go-client-5.png" width="35%">
+<img src="imgs/remote-devops-desktop-x2go-client-6b.png" width="45%">
 
 ## Troubleshooting
 
 ### Check the creation of AWS Resources
 
-Check the creation of EC2 instance and debug the `remotedevenc.sh` bash script.
+Check the creation of EC2 instance and debug the bash scripts.
 
 ```sh
-buntu@ip-10-0-100-4:~$ cat /var/log/cloud-init-output.log
+// Checking Cloud-Init 
+ubuntu@ip-10-0-100-4:~$ tail -f /var/log/cloud-init-output.log
 
-Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~18.04.1 running 'init-local' at Wed, 08 Apr 2020 17:16:17 +0000. Up 25.77 seconds.
-Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~18.04.1 running 'init' at Wed, 08 Apr 2020 17:16:24 +0000. Up 32.94 seconds.
-...
-aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=cheapdevenv" "Key=Environment,Value=cheapdevenv"
-
-An error occurred (UnauthorizedOperation) when calling the CreateTags operation: You are not authorized to perform this operation. Encoded authorization failure message: ....
-Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~18.04.1 running 'modules:final' at Wed, 08 Apr 2020 17:17:34 +0000. Up 102.63 seconds.
-2020-04-08 17:22:20,714 - util.py[WARNING]: Failed running /var/lib/cloud/instance/scripts/part-001 [255]
-2020-04-08 17:22:20,750 - cc_scripts_user.py[WARNING]: Failed to run module scripts-user (scripts in /var/lib/cloud/instance/scripts)
-2020-04-08 17:22:20,751 - util.py[WARNING]: Running module scripts-user (<module 'cloudinit.config.cc_scripts_user' from '/usr/lib/python3/dist-packages/cloudinit/config/cc_scripts_user.py'>) failed
-Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~18.04.1 finished at Wed, 08 Apr 2020 17:22:21 +0000. Datasource DataSourceEc2Local.  Up 389.30 seconds
+// Checking the bash scripts created by Cloud-Init
+ubuntu@ip-10-0-100-4:~$ ls -la /var/lib/cloud/instance/scripts/
+total 16
+drwxr-xr-x 2 root root 4096 Apr 15 18:28 .
+drwxr-xr-x 5 root root 4096 Apr 15 18:35 ..
+-rwx------ 1 root root 2651 Apr 15 18:28 install_devops.sh
+-rwx------ 1 root root 1149 Apr 15 18:28 install_gui.sh
 ```
-
-The above error means that setting tags to AWS EC2 instance don't have enough permissions. This is solved attaching `ec2_ebs_policy` to `ec2_iam_role`.
-
 
 ### Error: `bash: x2golistsessions: command not found`
 

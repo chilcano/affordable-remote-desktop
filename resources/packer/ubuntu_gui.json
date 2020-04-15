@@ -1,0 +1,41 @@
+{
+  "variables": {
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+    "aws_region": "us-east-1",
+    "aws_instance_type": "t2.small",
+    "aws_vpc_id": "{{env `AWS_VPC_ID`}}",
+    "aws_subnet_id": "{{env `AWS_SUBNET_ID`}}",
+    "os_source_image": "ubuntu-bionic-18.04-amd64",
+    "my_timestamp": "{{timestamp}}"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "{{user `aws_region`}}",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "ubuntu/images/hvm-ssd/{{user `os_source_image`}}-server-*",
+        "root-device-type": "ebs"
+      },
+      "owners": ["099720109477"], 
+      "most_recent": true
+    },      
+    "instance_type": "{{user `aws_instance_type`}}",
+    "ssh_username": "ubuntu",    
+    "tags": {
+      "Name": "chilcano/images/hvm-ssd/{{user `os_source_image`}}-gui-{{timestamp}}",
+      "Description": "Ubuntu with a GUI based on XFCE4 and X2Go"   
+    },
+    "ami_name": "chilcano/images/hvm-ssd/{{user `os_source_image`}}-gui-{{timestamp}}",
+    "vpc_id": "{{user `aws_vpc_id`}}",
+    "subnet_id": "{{user `aws_subnet_id`}}",
+    "associate_public_ip_address": "true"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "script": "./install_gui.sh"
+  }]
+}
