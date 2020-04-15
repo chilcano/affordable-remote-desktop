@@ -6,8 +6,8 @@ resource "aws_vpc" "main_vpc" {
   enable_dns_hostnames = true
 
   tags {
-    Name = "${var.devenv_name}"
-    Environment = "${var.devenv_name}"
+    Name = "${var.node_name}"
+    Environment = "${var.node_name}"
   }
 }
 
@@ -15,8 +15,8 @@ resource "aws_internet_gateway" "main_gw" {
   vpc_id = "${aws_vpc.main_vpc.id}"
 
   tags {
-    Name = "${var.devenv_name}"
-    Environment = "${var.devenv_name}"
+    Name = "${var.node_name}"
+    Environment = "${var.node_name}"
   }
 }
 
@@ -27,8 +27,8 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "${var.devenv_name}"
-    Environment = "${var.devenv_name}"
+    Name = "${var.node_name}"
+    Environment = "${var.node_name}"
   }
 }
 
@@ -43,8 +43,8 @@ resource "aws_route_table" "gw_route_table" {
   depends_on = ["aws_internet_gateway.main_gw"]
 
   tags {
-    Name = "${var.devenv_name}"
-    Environment = "${var.devenv_name}"
+    Name = "${var.node_name}"
+    Environment = "${var.node_name}"
   }
 }
 
@@ -58,13 +58,13 @@ resource "aws_route_table_association" "public_route_table" {
 // Security Group and its ingress/egress rules   
 // ======================================================
 resource "aws_security_group" "sec_group" {
-  name = "${var.devenv_name}"
+  name = "${var.node_name}"
   description = "Allow inbound and outbound traffic"
   vpc_id = "${aws_vpc.main_vpc.id}"
 
   tags {
-    Name = "${var.devenv_name}"
-    Environment = "${var.devenv_name}"
+    Name = "${var.node_name}"
+    Environment = "${var.node_name}"
   }
 }
 
@@ -118,22 +118,10 @@ resource "aws_security_group_rule" "allow_all_out" {
 // ------------------------------------------------------
 
 // ======================================================
-// Uploading Bash Script as Template   
-// ======================================================
-data "template_file" "remotedevenv_userdata_tpl" {
-  template = "${file("remotedevenv.sh")}"
-
-  vars {
-    instancename = "${var.devenv_name}"
-  }
-}
-// ------------------------------------------------------
-
-// ======================================================
 // IAM configuration      
 // ======================================================
 resource "aws_iam_role" "ec2_iam_role" {
-  name = "${var.devenv_name}_instance_role"
+  name = "${var.node_name}_instance_role"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -152,10 +140,10 @@ resource "aws_iam_role" "ec2_iam_role" {
 EOF
 }
 
-resource "awsi_am_policy" "ec2_ebs_policy" {
-  name        = "${var.devenv_name}_instance_policy"
+resource "aws_iam_policy" "ec2_ebs_policy" {
+  name        = "${var.node_name}_instance_policy"
   path        = "/"
-  description = "Policy for ${var.devenv_name} instance to allow dynamic provisioning of EBS persistent volumes"
+  description = "Policy for ${var.node_name} instance to allow dynamic provisioning of EBS persistent volumes"
 
   policy = <<EOF
 {
@@ -197,8 +185,40 @@ resource "aws_iam_role_policy_attachment" "ec2_role_policy_att" {
 }
 
 resource "aws_iam_instance_profile" "iam_instance_profile" {
-  name = "${var.devenv_name}_instance_profile"
+  name = "${var.node_name}_instance_profile"
   role = "${aws_iam_role.ec2_iam_role.name}"
+}
+// ------------------------------------------------------
+
+// ======================================================
+// Uploading Bash Script as Template   
+// ======================================================
+data "template_file" "install_devops_tpl" {
+  template = "${file("resources/cloudinit/install_devops_tpl.sh")}"
+
+  vars {
+    instancename = "${var.node_name}"
+  }
+}
+
+data "template_file" "install_gui_tpl" {
+  template = "${file("resources/cloudinit/install_gui_tpl.sh")}"
+}
+
+data "template_cloudinit_config" "remotedesktop_userdata_cloudinit" {
+  base64_encode = true
+
+  part {
+    filename     = "install_devops.sh"
+    content_type = "text/x-shellscript"
+    content      = "${data.template_file.install_devops_tpl.rendered}"
+  }
+
+  part {
+    filename     = "install_gui.sh"
+    content_type = "text/x-shellscript"
+    content      = "${data.template_file.install_gui_tpl.rendered}"
+  }
 }
 // ------------------------------------------------------
 
@@ -209,22 +229,22 @@ resource "aws_iam_instance_profile" "iam_instance_profile" {
 data "aws_ami" "latest_ami" {
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-instance/ubuntu-bionic-18.04-amd64-server-*"]
+    values = ["${var.ami_name_filter}"]
   }
 
   most_recent = true
-  owners      = ["099720109477"] # Ubuntu
+  owners      = ["${var.ami_owner}"]
 }
 
-resource "aws_spot_instance_request" "remotedevenv" {
+resource "aws_spot_instance_request" "remotedesktop" {
   ami                     = "${data.aws_ami.latest_ami.id}"
-  instance_type           = "${var.remotedevenv_instance_type}"
+  instance_type           = "${var.remotedesktop_instance_type}"
   subnet_id               = "${aws_subnet.public_subnet.id}"
-  user_data               = "${data.template_file.remotedevenv_userdata_tpl.rendered}"
+  user_data_base64        = "${data.template_cloudinit_config.remotedesktop_userdata_cloudinit.rendered}"
   key_name                = "${var.ssh_key}"
   iam_instance_profile    = "${aws_iam_instance_profile.iam_instance_profile.name}"
   vpc_security_group_ids  = ["${aws_security_group.sec_group.id}"]
-  spot_price              = "${var.remotedevenv_spot_price}"
+  spot_price              = "${var.remotedesktop_spot_price}"
   valid_until             = "9999-12-25T12:00:00Z"
   wait_for_fulfillment    = true
   private_ip              = "10.0.100.4"
@@ -232,8 +252,8 @@ resource "aws_spot_instance_request" "remotedevenv" {
   depends_on = ["aws_internet_gateway.main_gw"]
 
   tags {
-    Name = "${var.devenv_name}_spot_instance"
-    Environment = "${var.devenv_name}_spot_instance"
+    Name = "${var.node_name}_spot_instance"
+    Environment = "${var.node_name}_spot_instance"
   }
 
   lifecycle {

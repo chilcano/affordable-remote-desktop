@@ -1,14 +1,20 @@
-#!/bin/bash -ve
+#!/bin/bash
+
+TIME_RUN_DEVOPS=$(date +%s)
+
+echo "##########################################################"
+echo "####           Installing the DevOps Tools            ####"
+echo "##########################################################"
 
 # Disable pointless daemons
 systemctl stop snapd snapd.socket lxcfs snap.amazon-ssm-agent.amazon-ssm-agent
 systemctl disable snapd snapd.socket lxcfs snap.amazon-ssm-agent.amazon-ssm-agent
 
-# Disable swap to make K8S happy
+# Disable swap to make K8s happy
 swapoff -a
 sed -i '/swap/d' /etc/fstab
 
-# Install Docker
+echo "-> Installing awscli, jq, docker.io and unzip"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y awscli jq docker.io unzip software-properties-common apt-transport-https
@@ -39,43 +45,27 @@ aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,V
 # Pass bridged IPv4 traffic to iptables chains
 service procps start
 
-# Install XFCE4
-apt-get install -y xfce4
-apt-mark hold xfce4
-
-# If you don't create AWS Security Groups, I recommend to install ufw and configure it.
-
-# Install X2Go server
-add-apt-repository ppa:x2go/stable
-apt-get update
-apt-get install -y x2goserver x2goserver-xsession
-apt-mark hold x2goserver
-#apt-get install x2gomatebindings  # if you use MATE/mubuntu
-#apt-get install x2golxdebindings  # if you use LXDE/lubuntu
-
-##########################################################
-####            Install your DevOps Tools             ####
-##########################################################
-
-# Install Chromium
+echo "-> Installing Chromium"
 apt-get install -y chromium-browser
 
-# Install Java
+echo "-> Installing Java"
 apt-get install -y openjdk-11-jre-headless
 
-# Install VS Code
+echo "-> Installing VS Code"
 wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
 add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
 apt-get update
 apt-get install -y code
 
-# Install Terraform
+echo "-> Installing Terraform"
 #TF_VERSION=0.12.24
 #TF_VERSION="0.11.15-oci"
 TF_VERSION_LATEST=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')
 TF_BUNDLE="terraform_$${TF_VERSION_LATEST}_linux_amd64.zip"
 
-wget "https://releases.hashicorp.com/terraform/$${TF_VERSION_LATEST}/$${TF_BUNDLE}"
+wget --quiet "https://releases.hashicorp.com/terraform/$${TF_VERSION_LATEST}/$${TF_BUNDLE}"
 unzip "$${TF_BUNDLE}"
 mv terraform /usr/local/bin/
 rm -rf terraf*
+
+printf "\t** Duration of DevOps tools installation: $((($(date +%s)-$${TIME_RUN_DEVOPS}))) seconds.\n\n"

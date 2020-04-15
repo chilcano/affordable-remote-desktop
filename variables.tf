@@ -1,4 +1,4 @@
-variable "devenv_name" {
+variable "node_name" {
   default = "cheapdevenv"
   description = "Controls the naming of the AWS resources."
 }
@@ -27,12 +27,25 @@ variable "az" {
   default = "a"
 }
 
-variable "remotedevenv_instance_type" {
+variable "remotedesktop_instance_type" {
   default = "m1.small"
-  description = "Which EC2 instance type to use for the remotedevenv instance."
+  description = "Which EC2 instance type to use for the remotedesktop instance."
 }
 
-variable "remotedevenv_spot_price" {
+variable "remotedesktop_spot_price" {
   default = "0.01"
-  description = "The maximum spot bid for the remotedevenv instance."
+  description = "The maximum spot bid for the remotedesktop instance."
+}
+
+variable "ami_name_filter" {
+  //default = "ubuntu/images/hvm-instance/ubuntu-bionic-18.04-amd64-server-*"     # Ubuntu
+  //default = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"          # Ubuntu
+  default = "chilcano/images/hvm-ssd/ubuntu-bionic-18.04-amd64-gui-*"           # Chilcano
+  description = "AMI Name Filter."
+}
+
+variable "ami_owner" {
+  //default = "099720109477"     # Ubuntu
+  default = "263455585760"     # Chilcano
+  description = "AMI Owner." 
 }
