@@ -36,10 +36,8 @@ $ packer build ubuntu_gui.json
 
 ### 4. Check AMI and EC2 Snapshot created
 
-<img src="imgs/packer-ubuntu-ami-gui-1-create-default-vpc.png" width="40%">
-<img src="imgs/packer-ubuntu-ami-gui-2-create-default-vpc.png" width="40%">
-<img src="imgs/packer-ubuntu-ami-gui-3-snapshot-ebs.png" width="40%">
-<img src="imgs/packer-ubuntu-ami-gui-4-ec2-ami.png" width="40%">
+<img src="imgs/packer-ubuntu-ami-gui-1-create-default-vpc.png" width="40%"> <img src="imgs/packer-ubuntu-ami-gui-2-create-default-vpc.png" width="40%">
+<img src="imgs/packer-ubuntu-ami-gui-3-snapshot-ebs.png" width="40%"> <img src="imgs/packer-ubuntu-ami-gui-4-ec2-ami.png" width="40%">
 
 
 ### 5. Delete AMI and EC2 Snapshot
@@ -47,6 +45,7 @@ $ packer build ubuntu_gui.json
 After running the above Packer template, your AWS account now has an AMI associated with it. This AMI is stored in AWS EBS, so unless you want to be charged about ~$0.09/month, you'll probably want to remove it. 
 Remove the AMI by first `deregistering` it on the AWS AMIS web console. Next, delete the associated `snapshot` on the AWS Snapshot web console.
 
+<img src="imgs/packer-ubuntu-ami-destroy-1-deregister-ami.png" width="40%"> <img src="imgs/packer-ubuntu-ami-destroy-2-delete-snapshot.png" width="40%">
 
 ## References
 
