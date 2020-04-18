@@ -229,15 +229,12 @@ ec2-100-26-48-80.compute-1.amazonaws.com
 ```
 Before all, You have to wait ~20 minutes (yes, It is too much and I'm going to fix it - see ToDo) after `terraform apply`. Then, open X2Go Client and enter these details about your EC2 Instance.
 
-<img src="imgs/remote-devops-desktop-x2go-client-1.png" width="40%">
-<img src="imgs/remote-devops-desktop-x2go-client-2.png" width="40%">
-<img src="imgs/remote-devops-desktop-x2go-client-3.png" width="40%">
-<img src="imgs/remote-devops-desktop-x2go-client-4.png" width="40%">
+<img src="imgs/remote-devops-desktop-x2go-client-1.png" width="40%"> <img src="imgs/remote-devops-desktop-x2go-client-2.png" width="40%">
+<img src="imgs/remote-devops-desktop-x2go-client-3.png" width="40%"> <img src="imgs/remote-devops-desktop-x2go-client-4.png" width="40%">
 
 And finally here below the Remote DevOps Desktop.  
 
-<img src="imgs/remote-devops-desktop-x2go-client-5.png" width="35%">
-<img src="imgs/remote-devops-desktop-x2go-client-6b.png" width="45%">
+<img src="imgs/remote-devops-desktop-x2go-client-5.png" width="35%"> <img src="imgs/remote-devops-desktop-x2go-client-6b.png" width="45%">
 
 ## Troubleshooting
 
