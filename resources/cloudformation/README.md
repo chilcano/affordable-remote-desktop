@@ -1,18 +1,18 @@
 ## Creating an Affordable Remote DevOps Desktop with AWS CloudFormation
 
-1. Go to directory.
+1. Go to directory.  
 
 ```sh
 $ cd gitrepos/affordable-remote-desktop/resources/cloudformation
 ```
 
-2. Convert JSON to YAML (optional). 
+2. Convert JSON to YAML (optional).  
 
 ```sh
 $ ruby -ryaml -rjson -e 'puts YAML.dump(JSON.load(ARGF))' < affordable-ec2.json > affordable-ec2.yaml
 ```
 
-3. Creating the CloudFormation Stack.
+3. Creating the CloudFormation Stack.  
 
 ```sh
 $ export AWS_ACCESS_KEY_ID="xxxxxx"; export AWS_SECRET_ACCESS_KEY="yyyyyyy"
@@ -28,7 +28,7 @@ $ aws cloudformation create-stack --template-body file://affordable-ec2.yaml --s
 }
 ```
 
-4. Getting access to the EC2 instance through SSH.
+4. Getting access to the EC2 instance through SSH.  
 
 First of all, get the FQDN (PublicDNS)
 ```sh
@@ -51,13 +51,13 @@ Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.3.0-1017-aws x86_64)
 ubuntu@ip-172-31-42-202:~$ 
 ```
 
-5. Cleanup.
+5. Cleanup.  
 
 ```sh
 $ aws cloudformation delete-stack --stack-name Affordable-Remote-DevOps-Desktop
 ```
 
-6. Rerun the stack providing a [Bash script](install_devops.sh) as `UserData` to install all DevOps tools.
+6. Rerun the stack providing a [Bash script](install_devops.sh) as `UserData` to install all DevOps tools.  
 
 ```sh
 $ aws cloudformation update-stack \
@@ -74,10 +74,9 @@ $ aws cloudformation create-stack \
   --parameters ParameterKey=KeyName,ParameterValue=chilcan0 ParameterKey=UserData,ParameterValue=$(base64 -w0 install_devops.sh) 
 ```
 
-
 Since the CloudFormation template has been updated (Output section updated and loading a bash script), we are going to execute CloudFormation with the flag `update-stack` instead of `create-stack`.
 
-7. Checking the provisioning process.
+7. Checking the provisioning process.  
 
 Once finished the `update-stack` or `create-stack` process, get the FQDN, connect to It through SSH and execute the below command.
 ```sh
