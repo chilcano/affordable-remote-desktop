@@ -6,8 +6,8 @@
 $ cd gitrepos/affordable-remote-desktop/resources/cloudformation
 ```
 
-2. Convert JSON to YAML (optional).
-3. 
+2. Convert JSON to YAML (optional). 
+
 ```sh
 $ ruby -ryaml -rjson -e 'puts YAML.dump(JSON.load(ARGF))' < affordable-ec2.json > affordable-ec2.yaml
 ```
@@ -65,6 +65,15 @@ $ aws cloudformation update-stack \
   --stack-name Affordable-Remote-DevOps-Desktop \
   --parameters ParameterKey=KeyName,ParameterValue=chilcan0 ParameterKey=UserData,ParameterValue=$(base64 -w0 install_devops.sh) 
 ```
+
+But if this is the first time you are running CloudFormation, then use this command:
+```sh
+$ aws cloudformation create-stack \
+  --template-body file://affordable-ec2.yaml \
+  --stack-name Affordable-Remote-DevOps-Desktop \
+  --parameters ParameterKey=KeyName,ParameterValue=chilcan0 ParameterKey=UserData,ParameterValue=$(base64 -w0 install_devops.sh) 
+```
+
 
 Since the CloudFormation template has been updated (Output section updated and loading a bash script), we are going to execute CloudFormation with the flag `update-stack` instead of `create-stack`.
 
