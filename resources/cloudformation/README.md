@@ -87,5 +87,16 @@
   $ ssh ubuntu@$"ec2-XYZ.compute-1.amazonaws.com" -i ~/.ssh/chilcan0.pem
   
   ubuntu@ip-172-31-42-202:~$ tail -f /var/log/cloud-init-output.log
+
+  Setting up code (1.45.0-1588868285) ...
+  Processing triggers for desktop-file-utils (0.23-1ubuntu3.18.04.2) ...
+  Processing triggers for mime-support (3.60ubuntu1) ...
+  ->>> Installing Terraform
+  Archive:  terraform_0.12.24_linux_amd64.zip
+    inflating: terraform               
+  	** Duration of DevOps tools installation: 105 seconds.
+  
+  Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~18.04.1 running 'modules:final' at Thu, 07 May 2020 22:16:17 +0000. Up 20.58 seconds.
+  
   ```
  
