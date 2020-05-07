@@ -30,5 +30,33 @@ $ aws cloudformation create-stack --template-body file://affordable-ec2.yml --st
 4. Getting access to EC2 instance through SSH
 
 ```sh
-$ ssh ubuntu@$ec2-xyz.compute-1.amazonaws.com -i ~/Downloads/chilcan0.pem
+$ chmod 400 ~/.ssh/chilcan0.pem
+
+$ ssh ubuntu@$"ec2-XYZ.compute-1.amazonaws.com" -i ~/.ssh/chilcan0.pem
+Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 5.3.0-1017-aws x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Thu May  7 20:09:20 UTC 2020
+
+  System load:  0.37              Processes:           98
+  Usage of /:   28.4% of 7.69GB   Users logged in:     0
+  Memory usage: 9%                IP address for eth0: 172.31.42.202
+  Swap usage:   0%
+
+ * Ubuntu 20.04 LTS is out, raising the bar on performance, security,
+   and optimisation for Intel, AMD, Nvidia, ARM64 and Z15 as well as
+   AWS, Azure and Google Cloud.
+
+     https://ubuntu.com/blog/ubuntu-20-04-lts-arrives
+
+
+0 packages can be updated.
+0 updates are security updates.
+
+
+Last login: Thu May  7 20:07:30 2020 from 83.46.129.81
+ubuntu@ip-172-31-42-202:~$ 
 ```
