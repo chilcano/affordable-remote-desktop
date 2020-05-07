@@ -19,7 +19,7 @@ $ export AWS_ACCESS_KEY_ID="xxxxxx"; export AWS_SECRET_ACCESS_KEY="yyyyyyy"
 $ export AWS_DEFAULT_REGION="us-east-1"
 ```
 
-Create the stack
+Create the stack.  
 ```sh
 $ aws cloudformation create-stack --template-body file://affordable-ec2.yaml --stack-name Affordable-Remote-DevOps-Desktop --parameters ParameterKey=KeyName,ParameterValue=chilcan0 
 
