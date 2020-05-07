@@ -32,6 +32,10 @@ Parameters:
     Default: 0.0.0.0/0
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x
+  UserData:
+    Description: The bash script to install all DevOps tools
+    Type: String
+    Default: ''
 Mappings:
   AWSInstanceType2Arch:
     t1.micro:
@@ -75,6 +79,8 @@ Resources:
       - Ref: RemoteDevOpsDesktopSecurityGroup
       KeyName:
         Ref: KeyName
+      UserData:
+        Ref: UserData
   RemoteDevOpsDesktopSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -90,12 +96,9 @@ Resources:
         CidrIp:
           Ref: SSHLocation
 Outputs:
-  WebsiteURL:
-    Description: URL for newly created LAMP stack
+  FQDNRemoteDevOpsDesktop:
+    Description: FQDN for newly created RemoteDevOpsDesktop
     Value:
-      Fn::Join:
-      - ''
-      - - http://
-        - Fn::GetAtt:
-          - RemoteDevOpsDesktopInstance
-          - PublicDnsName
+      Fn::GetAtt:
+      - RemoteDevOpsDesktopInstance
+      - PublicDnsName

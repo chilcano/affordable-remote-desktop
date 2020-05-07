@@ -33,7 +33,12 @@
       "Default": "0.0.0.0/0",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x"
-    } 
+    },
+    "UserData" : {
+        "Description" : "The bash script to install all DevOps tools",
+        "Type": "String",
+        "Default": ""
+      } 
    },
  
     "Mappings" : {
@@ -50,7 +55,7 @@
         "m1.xlarge"   : { "Arch" : "HVM64"  }
       },
       "AWSRegionArch2AMI" : {
-        "us-east-1"        : {"HVM64" : "ami-0ff8a91507f77f867", "HVMG2" : "ami-0a584ac55a7631c0c"}
+        "us-east-1"        : {"HVM64" : "ami-03d90538529f9e304"}
       }
     },
 
@@ -61,7 +66,8 @@
               "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" }, { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
               "InstanceType"   : { "Ref" : "InstanceType" },
               "SecurityGroups" : [ {"Ref" : "RemoteDevOpsDesktopSecurityGroup"} ],
-              "KeyName"        : { "Ref" : "KeyName" }
+              "KeyName"        : { "Ref" : "KeyName" },
+              "UserData"       : { "Ref" : "UserData" }
           }
         },
         "RemoteDevOpsDesktopSecurityGroup" : {
@@ -77,9 +83,9 @@
     },
 
     "Outputs" : {
-      "WebsiteURL" : {
-      "Description" : "URL for newly created LAMP stack",
-      "Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "RemoteDevOpsDesktopInstance", "PublicDnsName" ]}]] }
+      "FQDNRemoteDevOpsDesktop" : {
+        "Description" : "FQDN for newly created RemoteDevOpsDesktop", 
+        "Value" : { "Fn::GetAtt" : [ "RemoteDevOpsDesktopInstance", "PublicDnsName" ] }
       }
     }
 }
