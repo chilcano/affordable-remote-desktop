@@ -2,24 +2,20 @@
 
 
 1. Go to directory.  
-  
   ```sh
   $ cd gitrepos/affordable-remote-desktop/resources/cloudformation
   ```
 
 2. Convert JSON to YAML (optional).  
-  
   ```sh
   $ ruby -ryaml -rjson -e 'puts YAML.dump(JSON.load(ARGF))' < affordable-ec2.json > affordable-ec2.yaml
   ```
 
 3. Creating the CloudFormation Stack.  
-  
   ```sh
   $ export AWS_ACCESS_KEY_ID="xxxxxx"; export AWS_SECRET_ACCESS_KEY="yyyyyyy"
   $ export AWS_DEFAULT_REGION="us-east-1"
   ```
-  
   Create the stack.  
   ```sh
   $ aws cloudformation create-stack --template-body file://affordable-ec2.yaml --stack-name Affordable-Remote-DevOps-Desktop --parameters ParameterKey=KeyName,ParameterValue=chilcan0 
@@ -30,7 +26,6 @@
   ```
 
 4. Getting access to the EC2 instance through SSH.  
-  
   First of all, get the FQDN (PublicDNS)
   ```sh
   $ aws cloudformation describe-stacks --stack-name Affordable-Remote-DevOps-Desktop --query "Stacks[0].Outputs[0]"
@@ -40,7 +35,6 @@
       "Description": "FQDN for newly created RemoteDevOpsDesktop"
   }
   ```
-  
   Now, connect to FQDN
   ```sh
   $ chmod 400 ~/.ssh/chilcan0.pem
@@ -53,13 +47,11 @@
   ```
 
 5. Cleanup.  
-  
   ```sh
   $ aws cloudformation delete-stack --stack-name Affordable-Remote-DevOps-Desktop
   ```
   
 6. Rerun the stack providing a [Bash script](install_devops.sh) as `UserData` to install all DevOps tools.  
-  
   ```sh
   $ aws cloudformation update-stack \
     --template-body file://affordable-ec2.yaml \
@@ -78,7 +70,6 @@
   Since the CloudFormation template has been updated (Output section updated and loading a bash script), we are going to execute CloudFormation with the flag `update-stack` instead of `create-stack`.
 
 7. Checking the provisioning process.  
-  
   Once finished the `update-stack` or `create-stack` process, get the FQDN, connect to It through SSH and execute the below command.
   ```sh
   $ aws cloudformation describe-stacks --stack-name Affordable-Remote-DevOps-Desktop --query "Stacks[0].Outputs[0].OutputValue"
@@ -97,6 +88,5 @@
   	** Duration of DevOps tools installation: 105 seconds.
   
   Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~18.04.1 running 'modules:final' at Thu, 07 May 2020 22:16:17 +0000. Up 20.58 seconds.
-  
   ```
  
