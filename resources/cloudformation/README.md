@@ -19,7 +19,10 @@
    ```
    Create the stack.  
    ```sh
-   $ aws cloudformation create-stack --template-body file://affordable-ec2.yaml --stack-name Affordable-Remote-DevOps-Desktop --parameters ParameterKey=KeyName,ParameterValue=chilcan0 
+   $ aws cloudformation create-stack \ 
+     --template-body file://affordable-ec2.yaml \ 
+     --stack-name Affordable-Remote-DevOps-Desktop \ 
+     --parameters ParameterKey=KeyName,ParameterValue=chilcan0 
    
    {
        "StackId": "arn:aws:cloudformation:us-east-1:263455585760:stack/Affordable-Remote-DevOps-Desktop/768bd810-9093-11ea-b441-0e58925d1f8e"
