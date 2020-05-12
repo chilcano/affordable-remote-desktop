@@ -17,7 +17,7 @@ The AWS services used are:
   - 4 Metrics
   - 2 Alerts
 
-<img src="imgs/remote-devops-desktop-x2go-client-8-cloudwatch-dashboard.png" width="40%"> <img src="imgs/remote-devops-desktop-x2go-client-8-cloudwatch-dashboard.png" width="40%">
+<img src="imgs/remote-devops-desktop-x2go-client-8-cloudwatch-dashboard.png" width="40%"> 
 
 ## Software pre-installed
 
