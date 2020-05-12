@@ -4,25 +4,30 @@ Terraform scripts to create an affordable remote development desktop hosted in A
 
 ![](imgs/remote-devops-desktop-x2go-client-1-arch-packer.png)
 
-## Components included
+## AWS Services used
 
-### AWS EC2 Instance
+The AWS services used are:
 
-Based on:
+1. EC2 Instance
+  - Spot
+  - m1.small (default)
+  - us-east-1 (default)
+2. AWS CloudWatch (free tier)
+  - 2 Dashboard
+  - 4 Metrics
+  - 2 Alerts
+
+<img src="imgs/remote-devops-desktop-x2go-client-8-cloudwatch-dashboard.png" width="40%"> <img src="imgs/remote-devops-desktop-x2go-client-8-cloudwatch-dashboard.png" width="40%">
+
+## Software pre-installed
+
+The software installed are:
 
 1. Ubuntu server AMI:
    - AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and AMI Owner `Chilcano` (by default)
 2. [XFCE4 Desktop](https://www.xfce.org) (no install the [Xubuntu](https://xubuntu.org) Desktop packages).
 3. [X2Go](https://wiki.x2go.org)
-4. AWS services used:
-   1. EC2 Instance
-      - Spot
-      - m1.small (default)
-      - us-east-1 (default)
-   2. AWS CloudWatch (free tier)
-      - Dashboard
-      - 2 Metrics
-      - 1 Alert
+
 
 | Tool           | Installed | Version 
 | ---            | ---       | ---
