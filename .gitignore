@@ -3,3 +3,4 @@
 .terraform
 token.txt
 *.log
+*.zip

@@ -14,10 +14,15 @@ Based on:
    - AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and AMI Owner `Chilcano` (by default)
 2. [XFCE4 Desktop](https://www.xfce.org) (no install the [Xubuntu](https://xubuntu.org) Desktop packages).
 3. [X2Go](https://wiki.x2go.org)
-4. EC2 Instance
-   - Spot
-   - m1.small (default)
-   - us-east-1 (default)
+4. AWS services used:
+   1. EC2 Instance
+      - Spot
+      - m1.small (default)
+      - us-east-1 (default)
+   2. AWS CloudWatch (free tier)
+      - Dashboard
+      - 2 Metrics
+      - 1 Alert
 
 | Tool           | Installed | Version 
 | ---            | ---       | ---
@@ -53,13 +58,13 @@ $ terraform init
 
 $ terraform plan \
   -var node_name="devops1" \
-  -var ssh_key="remotedesktop" \
-  -var developer_cidr_blocks="83.32.214.211/32" 
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.46.129.81/32" 
 
 $ terraform apply \
   -var node_name="devops1" \
-  -var ssh_key="remotedesktop" \
-  -var developer_cidr_blocks="83.32.214.211/32" 
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.46.129.81/32" 
 ```
 
 ### Execute Terraform plan providing a customized AMI (using Packer.io)
@@ -209,9 +214,9 @@ We are going to use X2Go Client in a local Ubuntu PC.
 
 If you are using Ubuntu, install X2Go Client is easy, just follow this commands.
 ```sh
-sudo add-apt-repository ppa:x2go/stable
-sudo apt-get update
-sudo apt-get install -y x2goclient
+$ sudo add-apt-repository ppa:x2go/stable
+$ sudo apt-get update
+$ sudo apt-get install -y x2goclient
 ```
 
 If you are using Windows, OSX, Raspbian, Java, iOS (iPad) or Android, you have clients too:
@@ -224,7 +229,7 @@ Below some screenshots if you want to know how looks like in Ubuntu 19.10.
 Before lets get the FQDN of EC2 instance.  
 
 ```sh
-chilcano@inti:~/git-repos/affordable-remote-destop$ terraform output remotedesktop_fqdn
+chilcano@inti:~/git-repos/affordable-remote-desktop$ terraform output remotedesktop_fqdn
 ec2-100-26-48-80.compute-1.amazonaws.com
 ```
 Before all, You have to wait ~20 minutes (yes, It is too much and I'm going to fix it - see ToDo) after `terraform apply`. Then, open X2Go Client and enter these details about your EC2 Instance.

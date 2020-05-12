@@ -261,3 +261,156 @@ resource "aws_spot_instance_request" "remotedesktop" {
   }
 }
 // ------------------------------------------------------
+
+// ======================================================
+// AWS CloudWatch Dashboard   
+// ======================================================
+
+resource "aws_cloudwatch_dashboard" "cloudwatch_dashboard_billing" {
+  dashboard_name = "${var.node_name}_billing"
+  
+  dashboard_body = <<EOF
+ {
+   "start": "-P3M",
+   "periodOverride": "inherit",
+   "widgets": [
+      {
+        "type": "metric",
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 6,
+        "properties": {
+            "view": "timeSeries",
+            "stacked": true,
+            "metrics": [
+                [ "AWS/Billing", "EstimatedCharges", "Currency", "USD" ]
+            ],
+            "region": "${var.region}",
+            "legend": {
+                "position": "bottom"
+            },
+            "title":"Estimated Charges",
+            "stat": "Maximum", 
+            "period": 86400,
+            "yAxis": {
+              "left": {
+                "label": "USD",
+                "showUnits": false
+              }
+            }
+        }
+      }
+    ]
+ }
+ EOF
+}
+
+resource "aws_cloudwatch_dashboard" "cloudwatch_dashboard_services" {
+  dashboard_name = "${var.node_name}_services"
+  
+  dashboard_body = <<EOF
+ {
+   "start": "-PT24H",
+   "periodOverride": "inherit",
+   "widgets": [
+      {
+        "type":"metric",
+        "x":0, 
+        "y":0,
+        "width":20, 
+        "height":6,
+        "properties":{
+            "metrics":[
+              [ "AWS/EC2", "CPUUtilization", "InstanceId", "${aws_spot_instance_request.remotedesktop.spot_instance_id}" ]
+            ],
+            "period":600,
+            "stat":"Average",
+            "region":"${var.region}",
+            "title":"% CPU Utilization (${var.node_name})"
+        }
+      },
+      {
+        "type":"metric",
+        "x":0, 
+        "y":6,
+        "width":20, 
+        "height":6,
+        "properties":{
+            "metrics":[
+              [ "AWS/EC2", "NetworkIn", "InstanceId", "${aws_spot_instance_request.remotedesktop.spot_instance_id}" ],
+              [ "AWS/EC2", "NetworkOut", "InstanceId", "${aws_spot_instance_request.remotedesktop.spot_instance_id}" ]
+            ],
+            "period":600,
+            "stat":"Average",
+            "region":"${var.region}",
+            "title":"Network In/Out in Bytes (${var.node_name})"
+        }
+      },
+      {
+        "type":"metric",
+        "x":0, 
+        "y":12,
+        "width":20, 
+        "height":6,
+        "properties":{
+            "metrics":[
+              [ "AWS/EC2", "EBSReadBytes", "InstanceId", "${aws_spot_instance_request.remotedesktop.spot_instance_id}" ],
+              [ "AWS/EC2", "EBSWriteBytes", "InstanceId", "${aws_spot_instance_request.remotedesktop.spot_instance_id}" ]
+            ],
+            "period":600,
+            "stat":"Average",
+            "region":"${var.region}",
+            "title":"EBS Read/Write in Bytes (${var.node_name})"
+        }
+      }
+    ]
+ }
+ EOF
+}
+// ------------------------------------------------------
+
+// ======================================================
+// AWS CloudWatch Metrics Alerts
+// ======================================================
+
+resource "aws_cloudwatch_metric_alarm" "cloudwatch_metric_alarm_cpu" {
+  alarm_name                = "${var.node_name}_alarm_cpu_80"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "2"
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/EC2"
+  period                    = "120"
+  statistic                 = "Average"
+  threshold                 = "80"
+  alarm_description         = "This metric monitors when CPU utilization reaches 80%"
+  insufficient_data_actions = []
+}
+
+resource "aws_cloudwatch_metric_alarm" "cloudwatch_metric_alarm_ebs_read" {
+  alarm_name                = "${var.node_name}_alarm_ebs_read_100"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "2"
+  metric_name               = "EBSReadBytes"
+  namespace                 = "AWS/EC2"
+  period                    = "120"
+  statistic                 = "Average"
+  threshold                 = "100"
+  alarm_description         = "This metric monitors when EBSReadBytes reaches 100 Bytes"
+  insufficient_data_actions = []
+}
+
+resource "aws_cloudwatch_metric_alarm" "cloudwatch_metric_alarm_ebs_write" {
+  alarm_name                = "${var.node_name}_alarm_ebs_write_100"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "2"
+  metric_name               = "EBSWriteBytes"
+  namespace                 = "AWS/EC2"
+  period                    = "120"
+  statistic                 = "Average"
+  threshold                 = "100"
+  alarm_description         = "This metric monitors when EBSWriteBytes reaches 100 Bytes"
+  insufficient_data_actions = []
+}
+// ------------------------------------------------------
+
