@@ -4,14 +4,14 @@ Terraform scripts to create an affordable remote development desktop hosted in A
 
 ![](imgs/remote-devops-desktop-x2go-client-1-arch-packer.png)
 
-## AWS Services used
+## AWS services used
 
 The AWS services used are:
 
 1. EC2 Instance
   - Spot
-  - m1.small (default)
-  - us-east-1 (default)
+  - m1.small (by default)
+  - us-east-1 (by default)
 2. AWS CloudWatch (free tier)
   - 2 Dashboard
   - 4 Metrics
@@ -21,29 +21,26 @@ The AWS services used are:
 
 ## Software pre-installed
 
-The software installed are:
+I'm using Ubuntu server and on It I going to intall/installed 3 type of software:
 
-1. Ubuntu server AMI:
-   - AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and AMI Owner `Chilcano` (by default)
-2. [XFCE4 Desktop](https://www.xfce.org) (no install the [Xubuntu](https://xubuntu.org) Desktop packages).
-3. [X2Go](https://wiki.x2go.org)
-
-
-| Tool           | Installed | Version 
-| ---            | ---       | ---
-| 1) Chromium    | Yes       | 80.0.3987.163
-| 2) VS Code     | Yes       | 1.43.2 
-| 3) Terraform   | Yes       | 0.12.24 
-| 4) AWS CLI     | Yes       | 1.14.44  
-| 5) Git         | Yes       | 2.17.1
-| 6) Python      | Yes       | 3.6.9 
-| 7) Java        | Yes       | OpenJDK 11.0.6
-| 8) Docker      | Yes       | 19.03.6
-
-
-## ToDo
-
-See [GitHub issues tab](https://github.com/chilcano/affordable-remote-desktop/issues).
+1. Ubuntu server with GUI enabled created from a custom AMI:
+   * Ubuntu server AMI:
+      - AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and AMI Owner `Chilcano` (by default)
+   * [XFCE4 Desktop](https://www.xfce.org) (no install the [Xubuntu](https://xubuntu.org) Desktop packages).
+   * [X2Go](https://wiki.x2go.org)
+2. Initial utilities:
+   * Git, jq, curl, etc.
+   * Docker
+   * Chromium
+3. DevOps tools (manual installation):
+   The installation of this will be through a bash script installer, you can review here: [setting_devops_tools.sh](https://github.com/chilcano/how-tos/blob/master/resources/setting_devops_tools.sh), this script will install the next tools:
+   - **VS Code**, multiples extensions and an initial configuration
+   - **Terraform** (version 1.15-oci by default)
+   - **Packer**
+   - **AWS CLI**
+   - **Python**
+   - **Java**(8 and 11 versions)
+   - **Maven**
 
 ## Getting started
 
