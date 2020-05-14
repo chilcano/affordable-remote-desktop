@@ -3,7 +3,7 @@
 TIME_RUN_DEVOPS=$(date +%s)
 
 echo "##########################################################"
-echo "####           Installing the DevOps Tools            ####"
+echo "####       Installing DevOps tools                    ####"
 echo "##########################################################"
 
 # Disable pointless daemons
@@ -14,10 +14,18 @@ systemctl disable snapd snapd.socket lxcfs snap.amazon-ssm-agent.amazon-ssm-agen
 swapoff -a
 sed -i '/swap/d' /etc/fstab
 
-echo "-> Installing awscli, jq, docker.io and unzip"
+printf "*** Installing utilities *** \n\n"
+
+printf ">>> Installing git, awscli, curl, jq, unzip, software-properties-common (apt-add-repository) and sudo \n"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y awscli jq docker.io unzip software-properties-common apt-transport-https
+apt-get install -y git awscli curl jq unzip software-properties-common sudo apt-transport-https
+printf ">>> Instalation of utilities completed \n\n"
+
+printf "*** Installing initial devops tools *** \n\n"
+
+printf ">>> Installing docker.io \n"
+apt-get install -y docker.io
 apt-mark hold docker.io
 
 # Point Docker at big ephemeral drive and turn on log rotation
@@ -45,27 +53,19 @@ aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,V
 # Pass bridged IPv4 traffic to iptables chains
 service procps start
 
-echo "-> Installing Chromium"
+printf ">>> Installing Chromium \n"
 apt-get install -y chromium-browser
 
-echo "-> Installing Java"
-apt-get install -y openjdk-11-jre-headless
+printf ">>> Instalation of initial devops tools completed \n\n"
 
-echo "-> Installing VS Code"
-wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
-apt-get update
-apt-get install -y code
+printf "*** Downloading DevOps tools installer *** \n\n"
 
-echo "-> Installing Terraform"
-#TF_VERSION=0.12.24
-#TF_VERSION="0.11.15-oci"
-TF_VERSION_LATEST=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')
-TF_BUNDLE="terraform_$${TF_VERSION_LATEST}_linux_amd64.zip"
-
-wget --quiet "https://releases.hashicorp.com/terraform/$${TF_VERSION_LATEST}/$${TF_BUNDLE}"
-unzip "$${TF_BUNDLE}"
-mv terraform /usr/local/bin/
-rm -rf terraf*
+DEFAULT_USER="ubuntu"
+wget -q https://raw.githubusercontent.com/chilcano/how-tos/master/resources/setting_devops_tools.sh
+chmod +x setting_devops_tools.sh
+mv setting_devops_tools.sh /home/$DEFAULT_USER/
+printf ">>> The setting_devops_tools.sh was downloaded successfully, now run it: \n"
+printf ">>> \t$ . setting_devops_tools.sh \n\n"
 
 printf "\t** Duration of DevOps tools installation: $((($(date +%s)-$${TIME_RUN_DEVOPS}))) seconds.\n\n"
+
