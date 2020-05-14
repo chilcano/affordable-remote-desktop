@@ -90,6 +90,20 @@ $ terraform apply \
   -var developer_cidr_blocks="83.46.129.81/32" 
 ```
 
+If you are going to use an EC2 Instance Type different such as `t2.small` or `t2.medium`, you have to consider increasing the bid for the EC2 Spot instance. These are the combinations that have worked:
+
+```sh
+$ terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var developer_cidr_blocks="83.46.129.81/32" \
+  -var remotedesktop_instance_type="t2.small"
+
+$ terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var developer_cidr_blocks="83.46.129.81/32" \ 
+  -var remotedesktop_instance_type="t2.medium" \
+  -var remotedesktop_spot_price="0.02
+```
+
+* The `remotedesktop_spot_price` by default is `0.01` and that has worked for `m1.small` and `t2.small`.
+* If you are going to use `t2.medium`, you have to setup `remotedesktop_spot_price` to `0.02`.
+
 ### Execute Terraform plan providing a customized AMI (using Packer.io)
 
 The Terraform plan I share here detects if the base AMI used to build the EC2 Instance has `XFCE4` and `X2Go Server` pre-installed, if so Terraform will install both packages taking ~20 minutes more. For example, next Terraform plan execution will install both packages because the `ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server` AMI owned by `099720109477` (Ubuntu) doesn't include any GUI Desktop Environment installed.
