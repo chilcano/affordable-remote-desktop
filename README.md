@@ -41,7 +41,7 @@ The AWS services used are:
 
 ## Software pre-installed
 
-I'm using Ubuntu server and on It I going to intall/installed 3 type of software:
+I'm using Ubuntu server and on It I'm going to install/installed 3 type of software:
 
 1. Ubuntu server with GUI enabled created from a custom AMI:
    * Ubuntu server AMI:
@@ -49,7 +49,7 @@ I'm using Ubuntu server and on It I going to intall/installed 3 type of software
    * [XFCE4 Desktop](https://www.xfce.org) (no install the [Xubuntu](https://xubuntu.org) Desktop packages).
    * [X2Go](https://wiki.x2go.org)
 2. Initial utilities:
-   * Git, jq, curl, etc.
+   * git, awscli, jq, curl, etc.
    * Docker
    * Chromium
 3. DevOps tools (manual installation):
@@ -61,6 +61,7 @@ I'm using Ubuntu server and on It I going to intall/installed 3 type of software
    - **Python**
    - **Java**(8 and 11 versions)
    - **Maven**
+   - **Ansible**
 
 ## Getting started
 
