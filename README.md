@@ -1,3 +1,23 @@
+- [Affordable Remote DevOps Desktop](#affordable-remote-devops-desktop)
+  - [AWS services used](#aws-services-used)
+  - [Software pre-installed](#software-pre-installed)
+  - [Getting started](#getting-started)
+    - [Clone this repository](#clone-this-repository)
+    - [Execute Terraform plan using customized AMI (by default)](#execute-terraform-plan-using-customized-ami-by-default)
+    - [Execute Terraform plan providing a customized AMI (using Packer.io)](#execute-terraform-plan-providing-a-customized-ami-using-packerio)
+    - [Verifying the process](#verifying-the-process)
+    - [Connect to the remote DevOps Desktop](#connect-to-the-remote-devops-desktop)
+      - [Installing X2Go Client](#installing-x2go-client)
+      - [Configure X2Go Client](#configure-x2go-client)
+  - [Troubleshooting](#troubleshooting)
+    - [Check the creation of AWS Resources](#check-the-creation-of-aws-resources)
+    - [Error: `bash: x2golistsessions: command not found`](#error-bash-x2golistsessions-command-not-found)
+    - [Error: `Unable to locate package xubuntu-restricted-extra`](#error-unable-to-locate-package-xubuntu-restricted-extra)
+    - [Installing and configuring UFW](#installing-and-configuring-ufw)
+  - [Performance](#performance)
+  - [References](#references)
+
+
 # Affordable Remote DevOps Desktop
 
 Terraform scripts to create an affordable remote development desktop hosted in AWS Public Cloud and trying to use affordable cloud resources ( &lt; 10 euros/month ).
@@ -315,6 +335,14 @@ To                         Action      From
 22/tcp (OpenSSH)           ALLOW IN    Anywhere
 22/tcp (OpenSSH (v6))      ALLOW IN    Anywhere (v6)
 ```
+
+## Performance
+
+| Type Instance | Price       | vCPU | Mem    | Storage  | Network      | Perforamce
+| ---           | ---         | ---  | ---    | ---      | ---          | ---
+| m1.small      | ~0.0040 USD | 1    | 1.7 GB | 160 GB   | Low          | **2/10**
+| t2.small      | ~0.0230 USD | 1    | 2.0 GB | EBS only | Low-Moderate | **3/10**
+| t2.medium     | ~0.0464 USD | 2    | 4.0 GB | EBS only | Low-Moderate | **5/10**
 
 ## References
 
