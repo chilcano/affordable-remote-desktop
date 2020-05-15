@@ -17,6 +17,9 @@ $ packer -v
 
 If you have the `VPCResourceNotSpecified` error, this can happen if you created your AWS account before `2013-12-04`. This is my case and I have to create a `default VPC` through AWS Web Console.
 
+<img src="imgs/packer-ubuntu-ami-gui-1-create-default-vpc.png" width="40%"> <img src="imgs/packer-ubuntu-ami-gui-2-create-default-vpc.png" width="40%">
+_<center>Creating default VPC</center>_
+
 > Further information:
 > * [Default VPC and Default Subnets](https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html)
 
@@ -30,13 +33,18 @@ $ export AWS_ACCESS_KEY_ID="your-access-key-id"; export AWS_SECRET_ACCESS_KEY="y
 $ export AWS_VPC_ID="your-vpc-id-07c2fc78af4aca574"; export AWS_SUBNET_ID="your-subnet-id-00096b5a3329dd4b2" 
 
 $ packer validate ubuntu_gui.json
-
 $ packer build ubuntu_gui.json
+```
+
+And if you want to overwrite a default variable:
+```sh
+$ packer validate -var os_source_image="ubuntu-focal-20.04-amd64" ubuntu_gui.json
+$ packer build -var os_source_image="ubuntu-focal-20.04-amd64" ubuntu_gui.json
 ```
 
 ### 4. Check AMI and EC2 Snapshot created
 
-<img src="imgs/packer-ubuntu-ami-gui-1-create-default-vpc.png" width="40%"> <img src="imgs/packer-ubuntu-ami-gui-2-create-default-vpc.png" width="40%">
+
 <img src="imgs/packer-ubuntu-ami-gui-3-snapshot-ebs.png" width="40%"> <img src="imgs/packer-ubuntu-ami-gui-4-ec2-ami.png" width="40%">
 
 

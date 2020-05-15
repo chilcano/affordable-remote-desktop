@@ -193,6 +193,11 @@ resource "aws_iam_instance_profile" "iam_instance_profile" {
 // ======================================================
 // Uploading Bash Script as Template   
 // ======================================================
+
+data "template_file" "install_gui_tpl" {
+  template = "${file("resources/cloudinit/install_gui_tpl.sh")}"
+}
+
 data "template_file" "install_devops_tpl" {
   template = "${file("resources/cloudinit/install_devops_tpl.sh")}"
 
@@ -201,23 +206,19 @@ data "template_file" "install_devops_tpl" {
   }
 }
 
-data "template_file" "install_gui_tpl" {
-  template = "${file("resources/cloudinit/install_gui_tpl.sh")}"
-}
-
 data "template_cloudinit_config" "remotedesktop_userdata_cloudinit" {
   base64_encode = true
-
-  part {
-    filename     = "install_devops.sh"
-    content_type = "text/x-shellscript"
-    content      = "${data.template_file.install_devops_tpl.rendered}"
-  }
 
   part {
     filename     = "install_gui.sh"
     content_type = "text/x-shellscript"
     content      = "${data.template_file.install_gui_tpl.rendered}"
+  }
+
+  part {
+    filename     = "install_devops.sh"
+    content_type = "text/x-shellscript"
+    content      = "${data.template_file.install_devops_tpl.rendered}"
   }
 }
 // ------------------------------------------------------

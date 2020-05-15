@@ -3,7 +3,7 @@
   - [Software pre-installed](#software-pre-installed)
   - [Getting started](#getting-started)
     - [Clone this repository](#clone-this-repository)
-    - [Execute Terraform plan using customized AMI (by default)](#execute-terraform-plan-using-customized-ami-by-default)
+    - [Execute Terraform plan using customized AMI](#execute-terraform-plan-using-customized-ami)
     - [Execute Terraform plan providing a customized AMI (using Packer.io)](#execute-terraform-plan-providing-a-customized-ami-using-packerio)
     - [Verifying the process](#verifying-the-process)
     - [Connect to the remote DevOps Desktop](#connect-to-the-remote-devops-desktop)
@@ -72,31 +72,30 @@ $ git clone https://github.com/chilcano/affordable-remote-desktop
 $ cd affordable-remote-desktop
 ```
 
-### Execute Terraform plan using customized AMI (by default)
+### Execute Terraform plan using customized AMI
 
-By default, if you want a Remote DevOps Desktop on AWS in ~3 minutes, you should just run the next commands. This process uses my customized public AMI (Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and Owner `Chilcano`). This customized AMI with `XFCE4` and `X2Go Server` pre-installed has been created using Hashicorp Packer ([here I share the Packer scripts](resources/packer/)).
+By default, if you want a Remote DevOps Desktop on AWS in ~3 minutes, you should just run the next commands. This process uses my customized public AMI (AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and Owner "263455585760"). This customized AMI with `XFCE4` and `X2Go Server` pre-installed has been created using Hashicorp Packer ([here I share the Packer scripts](resources/packer/)).
 
 ```sh
-$ terraform init
-
-$ terraform plan \
-  -var node_name="devops1" \
-  -var ssh_key="chilcan0" \
-  -var developer_cidr_blocks="83.46.129.81/32" 
-
 $ terraform apply \
   -var node_name="devops1" \
   -var ssh_key="chilcan0" \
   -var developer_cidr_blocks="83.46.129.81/32" 
 ```
-
+**Changing the EC2 Instance Type**  
 If you are going to use an EC2 Instance Type different such as `t2.small` or `t2.medium`, you have to consider increasing the bid for the EC2 Spot instance. These are the combinations that have worked:
 
 ```sh
-$ terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var developer_cidr_blocks="83.46.129.81/32" \
+$ terraform apply \ 
+  -var node_name="devops0" \
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.46.129.81/32" \
   -var remotedesktop_instance_type="t2.small"
 
-$ terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var developer_cidr_blocks="83.46.129.81/32" \ 
+$ terraform apply \
+  -var node_name="devops0" \
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.46.129.81/32" \ 
   -var remotedesktop_instance_type="t2.medium" \
   -var remotedesktop_spot_price="0.02
 ```
@@ -104,54 +103,44 @@ $ terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var develope
 * The `remotedesktop_spot_price` by default is `0.01` and that has worked for `m1.small` and `t2.small`.
 * If you are going to use `t2.medium`, you have to setup `remotedesktop_spot_price` to `0.02`.
 
+**Using new custom AMI Ubuntu Focal 20.04 with `XFCE4` and `X2Go Server`**
+
+I've made public another custom AMI based on Ubuntu Focal 20.04, then let's go using it:
+
+```sh
+$ terraform apply \
+  -var node_name="devops3" \
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.46.129.81/32" \
+  -var remotedesktop_instance_type="t2.medium" \
+  -var ami_name_filter="chilcano/images/hvm-ssd/ubuntu-focal-20.04-amd64-gui-*" \
+  -var remotedesktop_spot_price="0.016"
+```
+
+
 ### Execute Terraform plan providing a customized AMI (using Packer.io)
 
 The Terraform plan I share here detects if the base AMI used to build the EC2 Instance has `XFCE4` and `X2Go Server` pre-installed, if so Terraform will install both packages taking ~20 minutes more. For example, next Terraform plan execution will install both packages because the `ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server` AMI owned by `099720109477` (Ubuntu) doesn't include any GUI Desktop Environment installed.
 
 ```sh
-$ terraform init
-
-$ terraform plan \
-  -var node_name="devops2" \
-  -var ssh_key="remotedesktop" \
-  -var developer_cidr_blocks="83.32.214.211/32" \
-  -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"\
-  -var ami_owner="099720109477" 
-
 $ terraform apply \
   -var node_name="devops2" \
   -var ssh_key="remotedesktop" \
   -var developer_cidr_blocks="83.32.214.211/32" \
-  -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"\
+  -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*" \
   -var ami_owner="099720109477" 
 ```
 
 Finally, if you don't have any customized AMI with `XFCE4` and `X2Go Server` pre-installed, and you want one but `private`, then you are lucky because I've shared Packer scripts to cook your own. Then the steps are:
 
-1. Create your own private and customized AMI using Packer. You can [review the Packer scripts here](resources/packer/).
-   ```sh
-   $ cd affordable-remote-desktop/resources/packer
-   $ export AWS_ACCESS_KEY_ID="your-access-key-id"; export AWS_SECRET_ACCESS_KEY="your-secret-access-key"
-   $ export AWS_VPC_ID="your-vpc-id-07c2fc78af4aca574"; export AWS_SUBNET_ID="your-subnet-id-00096b5a3329dd4b2" 
-   $ packer validate ubuntu_gui.json
-   $ packer build ubuntu_gui.json
-   ```
+1. Create your own private and customized AMI using Packer. [Follow the steps here (Packer scripts)](resources/packer/).
 2. Provision your Remote DevOps Desktop on AWS using Terraform.
    ```sh
-   $ terraform init
-   
-   $ terraform plan \
-     -var node_name="devops2" \
-     -var ssh_key="remotedesktop" \
-     -var developer_cidr_blocks="83.32.214.211/32" \
-     -var ami_name_filter="your-ami-name-filter"\
-     -var ami_owner="your-ami-owner" 
-   
    $ terraform apply \
      -var node_name="devops2" \
      -var ssh_key="remotedesktop" \
      -var developer_cidr_blocks="83.32.214.211/32" \
-     -var ami_name_filter="your-ami-name-filter"\
+     -var ami_name_filter="your-ami-name-filter" \
      -var ami_owner="your-ami-owner" 
    ```
 
@@ -180,67 +169,37 @@ drwxr-xr-x 5 root root 4096 Apr 15 18:35 ..
 The `install_devops.sh` and `install_gui.sh` were created by Terraform during provisioning, both bash scripts install and configure the DevOps tools and GUI tools respectively.
 
 
-__Checking the GUI tools installed__
+__Checking configurations and versions installed__
 
 Immediately after you will get access to remote instance.
 
 ```sh
-ubuntu@ip-10-0-100-4:~$ ssh -V
-OpenSSH_7.6p1 Ubuntu-4ubuntu0.3, OpenSSL 1.0.2n  7 Dec 2017
+$ lsb_release -a
 
-ubuntu@ip-10-0-100-4:~$ ufw version
-ufw 0.36
-Copyright 2008-2015 Canonical Ltd.
+// Default Display Manager
+$ cat /etc/X11/default-display-manager
 
-ubuntu@ip-10-0-100-4:~$ sudo ufw status
-Status: inactive
+$ ssh -V
 
-ubuntu@ip-10-0-100-4:~$ apt list -a xfce4
-Listing... Done
-xfce4/bionic,now 4.12.4 all [installed]
+$ apt list -a xfce4
 
-ubuntu@ip-10-0-100-4:~$ x2goversion 
-: 4.1.0.3
-: 4.1.0.3
-: 4.1.0.3
-: 4.1.0.3
-: 4.1.0.3
-: 3.5.99.22
-: 4.1.0.3
-```
+$ x2goversion 
 
-__Checking the DevOps tools installed__
+$ git --version
 
-You probably get different versions.
+$ code --version
 
-```sh
-ubuntu@ip-10-0-100-4:~$ chromium-browser --version
-Chromium 80.0.3987.163 Built on Ubuntu , running on Ubuntu 18.04
+$ python3 --version
 
-buntu@ip-10-0-100-4:~$ git --version
-git version 2.17.1
+$ aws --version
 
-ubuntu@ip-10-0-100-4:~$ code --version
-1.43.2
-0ba0ca52957102ca3527cf479571617f0de6ed50
-x64
+$ terraform -v
 
-ubuntu@ip-10-0-100-4:~$ python3 --version
-Python 3.6.9
+$ docker --version
 
-ubuntu@ip-10-0-100-4:~$ aws --version
-aws-cli/1.14.44 Python/3.6.9 Linux/4.15.0-1063-aws botocore/1.8.48
+$ java --version
 
-ubuntu@ip-10-0-100-4:~$ terraform -v
-Terraform v0.12.24
-
-ubuntu@ip-10-0-100-4:~$ docker --version
-Docker version 19.03.6, build 369ce74a3c
-
-ubuntu@ip-10-0-100-4:~$ java --version
-openjdk 11.0.6 2020-01-14
-OpenJDK Runtime Environment (build 11.0.6+10-post-Ubuntu-1ubuntu118.04.1)
-OpenJDK 64-Bit Server VM (build 11.0.6+10-post-Ubuntu-1ubuntu118.04.1, mixed mode, sharing)
+$ chromium-browser --version
 ```
 
 ### Connect to the remote DevOps Desktop
@@ -269,10 +228,15 @@ Before lets get the FQDN of EC2 instance.
 chilcano@inti:~/git-repos/affordable-remote-desktop$ terraform output remotedesktop_fqdn
 ec2-100-26-48-80.compute-1.amazonaws.com
 ```
-Before all, You have to wait ~20 minutes (yes, It is too much and I'm going to fix it - see ToDo) after `terraform apply`. Then, open X2Go Client and enter these details about your EC2 Instance.
+Before all, You have to wait ~5 minutes (yes, It is too much and I'm going to fix it - see ToDo) after `terraform apply`. Then, open X2Go Client and enter the details about your EC2 Instance.
 
 <img src="imgs/remote-devops-desktop-x2go-client-1.png" width="40%"> <img src="imgs/remote-devops-desktop-x2go-client-2.png" width="40%">
 <img src="imgs/remote-devops-desktop-x2go-client-3.png" width="40%"> <img src="imgs/remote-devops-desktop-x2go-client-4.png" width="40%">
+
+Also, you can run X2Go Client from terminal.
+```sh
+$ x2goclient --session=RemoteDevOps --hide --add-to-known-hosts
+```
 
 And finally here below the Remote DevOps Desktop.  
 
@@ -286,7 +250,7 @@ Check the creation of EC2 instance and debug the bash scripts.
 
 ```sh
 // Checking Cloud-Init 
-ubuntu@ip-10-0-100-4:~$ tail -f /var/log/cloud-init-output.log
+ubuntu@ip-10-0-100-4:~$ cat /var/log/cloud-init-output.log
 
 // Checking the bash scripts created by Cloud-Init
 ubuntu@ip-10-0-100-4:~$ ls -la /var/lib/cloud/instance/scripts/

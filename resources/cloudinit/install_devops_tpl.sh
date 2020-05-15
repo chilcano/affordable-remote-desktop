@@ -17,15 +17,14 @@ sed -i '/swap/d' /etc/fstab
 printf "*** Installing utilities *** \n\n"
 
 printf ">>> Installing git, awscli, curl, jq, unzip, software-properties-common (apt-add-repository) and sudo \n"
-export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y git awscli curl jq unzip software-properties-common sudo apt-transport-https
+DEBIAN_FRONTEND=noninteractive apt-get install -y git awscli curl jq unzip software-properties-common sudo apt-transport-https
 printf ">>> Instalation of utilities completed \n\n"
 
 printf "*** Installing initial devops tools *** \n\n"
 
 printf ">>> Installing docker.io \n"
-apt-get install -y docker.io
+DEBIAN_FRONTEND=noninteractive apt-get install -y docker.io
 apt-mark hold docker.io
 
 # Point Docker at big ephemeral drive and turn on log rotation
@@ -52,9 +51,6 @@ aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,V
 
 # Pass bridged IPv4 traffic to iptables chains
 service procps start
-
-printf ">>> Installing Chromium \n"
-apt-get install -y chromium-browser
 
 printf ">>> Instalation of initial devops tools completed \n\n"
 
