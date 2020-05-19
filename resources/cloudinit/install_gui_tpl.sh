@@ -40,7 +40,7 @@ if [ $${GUI_STATUS} -ne 0 ]; then
 else
     echo "=> Seems the XFCE4 and X2Go Server have already been installed (GUI_STATUS=$${GUI_STATUS})."
 fi
-echo "=> Checking XFCE4 and X2Go Server installation."
+echo "=> Checking XFCE4 and X2Go Server"
 dpkg-query -W xfce4 x2goserver
 
-printf "\t** Duration of GUI tools installation: $((($(date +%s)-$${TIME_RUN_GUI}))) seconds.\n\n"
+printf "\t Duration: $((($(date +%s)-$${TIME_RUN_GUI}))) seconds.\n\n"
