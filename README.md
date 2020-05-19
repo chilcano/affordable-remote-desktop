@@ -77,7 +77,7 @@ $ cd affordable-remote-desktop
 ### Execute Terraform plan using customized AMI
 
 #### Instance based on Ubuntu 18.04
-The default process creates an EC2 instance based on `t2.small`, uses the customized public AMI (AMI Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and owner "263455585760"). This customized AMI has `XFCE4` and `X2Go Server` pre-installed and It has been created using Hashicorp Packer ([here I share the Packer scripts](resources/packer/)).
+The default process creates an EC2 instance based on `m1.small` and uses the customized public AMI (Name `chilcano/images/hvm-instance/ubuntu-bionic-18.04-amd64-gui` and owner "263455585760", and based on Ubuntu 18.04 server). This customized AMI has `XFCE4` and `X2Go Server` pre-installed and It has been created using Hashicorp Packer ([here I share the Packer scripts](resources/packer/)).
 
 ```sh
 $ terraform apply \
@@ -88,23 +88,23 @@ $ terraform apply \
 
 #### Changing the EC2 Instance Type
 If you are going to use an EC2 Instance Type different such as `t2.small` or `t2.medium`, you have to consider increasing the bid for the EC2 Spot instance. These are the combinations that have worked:
-
 ```sh
 $ terraform apply \ 
   -var node_name="devops0" \
   -var ssh_key="chilcan0" \
   -var developer_cidr_blocks="83.45.103.161/32" \
   -var remotedesktop_instance_type="t2.small"
-
-$ terraform apply \
-  -var node_name="devops0" \
-  -var ssh_key="chilcan0" \
-  -var developer_cidr_blocks="83.45.103.161/32" \ 
-  -var remotedesktop_instance_type="t2.medium" \
-  -var remotedesktop_spot_price="0.012"
 ```
 
 The `remotedesktop_spot_price` by default is `0.01` and that has worked for `m1.small` and `t2.small`, however if you are going to use `t2.medium`, you should try to increase `remotedesktop_spot_price`. The minimum has worked for me is `0.014`.
+```sh
+$ terraform apply \
+  -var node_name="devops0" \
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.45.103.161/32" \
+  -var remotedesktop_instance_type="t2.medium" \
+  -var remotedesktop_spot_price="0.014"
+```
 
 #### Using new custom AMI Ubuntu Focal 20.04 with `XFCE4` and `X2Go Server` 
 I've made public another custom AMI based on Ubuntu Focal 20.04, then let's go using it:
