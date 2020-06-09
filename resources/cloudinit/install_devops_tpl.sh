@@ -59,12 +59,12 @@ service procps start
 echo "----------------------------------------------------------"
 echo "|        Downloading devops tools installer              |"
 echo "----------------------------------------------------------"
-
+ 
 DEFAULT_USER="ubuntu"
-wget -q https://raw.githubusercontent.com/chilcano/how-tos/master/resources/setting_devops_tools.sh
-chmod +x setting_devops_tools.sh
-mv setting_devops_tools.sh /home/$DEFAULT_USER/
-printf "==> The setting_devops_tools.sh was downloaded successfully, now run it: \n"
-printf "==> \t$ . setting_devops_tools.sh \n\n"
+wget -q https://raw.githubusercontent.com/chilcano/how-tos/master/resources/devops_tools_install_v1.sh
+chmod +x devops_tools_install_v1.sh
+mv devops_tools_install_v1.sh /home/$DEFAULT_USER/
+printf "==> The devops_tools_install_v1.sh was downloaded successfully, now run it: \n"
+printf "==> \t$ . devops_tools_install_v1.sh \n\n"
 
 printf "\t Duration: $((($(date +%s)-$${TIME_RUN_DEVOPS}))) seconds.\n\n"
