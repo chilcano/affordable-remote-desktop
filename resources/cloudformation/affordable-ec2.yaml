@@ -61,6 +61,10 @@ Mappings:
   AWSRegionArch2AMI:
     us-east-1:
       HVM64: ami-03d90538529f9e304
+
+##==============================================================
+##                        Resources                           ##
+##==============================================================
 Resources:
   RemoteDevOpsDesktopInstance:
     Type: AWS::EC2::Instance
@@ -95,6 +99,10 @@ Resources:
         ToPort: '22'
         CidrIp:
           Ref: SSHLocation
+
+##==============================================================
+##                        Outputs                             ##
+##==============================================================
 Outputs:
   FQDNRemoteDevOpsDesktop:
     Description: FQDN for newly created RemoteDevOpsDesktop
