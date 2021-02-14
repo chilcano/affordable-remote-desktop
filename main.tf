@@ -195,11 +195,11 @@ resource "aws_iam_instance_profile" "iam_instance_profile" {
 // ======================================================
 
 data "template_file" "install_gui_tpl" {
-  template = "${file("resources/cloudinit/install_gui_tpl.sh")}"
+  template = file("resources/cloudinit/install_gui_tpl.sh")
 }
 
 data "template_file" "install_devops_tpl" {
-  template = "${file("resources/cloudinit/install_devops_tpl.sh")}"
+  template = file("resources/cloudinit/install_devops_tpl.sh")
 
   vars {
     instanceName = var.node_name
@@ -212,13 +212,13 @@ data "template_cloudinit_config" "remotedesktop_userdata_cloudinit" {
   part {
     filename     = "install_gui.sh"
     content_type = "text/x-shellscript"
-    content      = "${data.template_file.install_gui_tpl.rendered}"
+    content      = data.template_file.install_gui_tpl.rendered
   }
 
   part {
     filename     = "install_devops.sh"
     content_type = "text/x-shellscript"
-    content      = "${data.template_file.install_devops_tpl.rendered}"
+    content      = data.template_file.install_devops_tpl.rendered
   }
 }
 // ------------------------------------------------------
@@ -230,11 +230,11 @@ data "template_cloudinit_config" "remotedesktop_userdata_cloudinit" {
 data "aws_ami" "latest_ami" {
   filter {
     name   = "name"
-    values = ["${var.ami_name_filter}"]
+    values = [var.ami_name_filter]
   }
 
   most_recent = true
-  owners      = ["${var.ami_owner}"]
+  owners      = [var.ami_owner]
 }
 
 resource "aws_spot_instance_request" "remotedesktop" {

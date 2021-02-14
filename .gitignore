@@ -4,3 +4,4 @@
 token.txt
 *.log
 *.zip
+*.hcl
