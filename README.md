@@ -57,14 +57,15 @@ $ terraform apply \
   -var remotedesktop_instance_type="t2.small"
 ```
 
-The `remotedesktop_spot_price` by default is `0.01` and that has worked for `m1.small` and `t2.small`, however if you are going to use `t2.medium`, you should try to increase `remotedesktop_spot_price`. The minimum has worked for me is `0.014`.
+The `remotedesktop_spot_price` by default is `0.01` and that has worked for `m1.small` and `t2.small`, however if you are going to use `t2.medium`, you should try to increase `remotedesktop_spot_price`. The minimum has worked for me is `0.014` in `us-east-1` and `0.016` in `eu-west-2`.
 ```sh
 $ terraform apply \
   -var node_name="devops0" \
   -var ssh_key="chilcan0" \
   -var developer_cidr_blocks="83.45.103.161/32" \
   -var remotedesktop_instance_type="t2.medium" \
-  -var remotedesktop_spot_price="0.014"
+  -var remotedesktop_spot_price="0.014" \
+  -var region="us-east-1"
 ```
 
 #### Using Chilcano's custom AMI with Ubuntu Focal 20.04, XFCE4 and X2Go Server
@@ -76,7 +77,8 @@ $ terraform apply \
   -var developer_cidr_blocks="83.45.103.161/32" \
   -var remotedesktop_instance_type="t2.medium" \
   -var ami_name_filter="chilcano/images/hvm-ssd/ubuntu-focal-20.04-amd64-gui-*" \
-  -var remotedesktop_spot_price="0.014"
+  -var remotedesktop_spot_price="0.016" \
+  -var region="eu-west-2"
 ```
 
 ### Using another customized AMI
@@ -92,9 +94,11 @@ $ terraform apply \
   -var ssh_key="chilcan0" \
   -var developer_cidr_blocks="83.45.103.161/32" \
   -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" \
-  -var ami_owner="099720109477" 
+  -var ami_owner="099720109477" \
+  -var remotedesktop_instance_type="t2.medium" \
+  -var remotedesktop_spot_price="0.016" \
+  -var region="eu-west-2"
 
-  terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var developer_cidr_blocks="83.45.103.161/32" -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" -var ami_owner="099720109477" 
 ```
 
 Finally, if you want to create your customized AMI with `XFCE4` and `X2Go Server` pre-installed, then you are lucky because [I've shared Packer scripts to cook your own](resources/packer/). Once created your custom AMI with `XFCE4` and `X2Go Server` you can run Terraform in this way:
@@ -140,25 +144,15 @@ $ lsb_release -a
 $ cat /etc/X11/default-display-manager
 
 $ ssh -V
-
 $ apt list -a xfce4
-
 $ x2goversion 
-
 $ git --version
-
 $ code --version
-
 $ python3 --version
-
 $ aws --version
-
 $ terraform -v
-
 $ docker --version
-
 $ java --version
-
 $ chromium-browser --version
 ```
 
@@ -198,6 +192,17 @@ $ x2goclient --session=RemoteDevOps --hide --add-to-known-hosts
 And finally here below the Remote DevOps Desktop.  
 
 <img src="imgs/remote-devops-desktop-x2go-client-5.png" width="35%"> <img src="imgs/remote-devops-desktop-x2go-client-6b.png" width="45%">
+
+### Cleaning up
+
+If you don't want incur charges when using AWS, I recommend remove completely recently created infrastructure.
+```sh
+$ terraform destroy \
+  -var node_name="mtls01" \
+  -var ssh_key="chilcan0" \
+  -var developer_cidr_blocks="83.45.103.161/32" \
+  -var region="eu-west-2"
+```
 
 ## Troubleshooting
 ### Check the creation of AWS Resources
