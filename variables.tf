@@ -38,8 +38,8 @@ variable "remotedesktop_spot_price" {
 }
 
 variable "ami_name_filter" {
-  //default = "ubuntu/images/hvm-instance/ubuntu-bionic-18.04-amd64-server-*"     # Ubuntu
   //default = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"          # Ubuntu
+  //default = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"    # Ubuntu
   default = "chilcano/images/hvm-ssd/ubuntu-bionic-18.04-amd64-gui-*"           # Chilcano
   description = "AMI Name Filter."
 }
