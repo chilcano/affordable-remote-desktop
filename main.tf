@@ -5,7 +5,7 @@ resource "aws_vpc" "main_vpc" {
   cidr_block = "10.0.0.0/16"
   enable_dns_hostnames = true
 
-  tags {
+  tags = {
     Name = var.node_name
     Environment = var.node_name
   }
@@ -14,7 +14,7 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_internet_gateway" "main_gw" {
   vpc_id = aws_vpc.main_vpc.id
 
-  tags {
+  tags = {
     Name = var.node_name
     Environment = var.node_name
   }
@@ -26,7 +26,7 @@ resource "aws_subnet" "public_subnet" {
   availability_zone = "${var.region}${var.az}"
   map_public_ip_on_launch = true
 
-  tags {
+  tags = {
     Name = var.node_name
     Environment = var.node_name
   }
@@ -42,7 +42,7 @@ resource "aws_route_table" "gw_route_table" {
 
   depends_on = [aws_internet_gateway.main_gw]
 
-  tags {
+  tags = {
     Name = var.node_name
     Environment = var.node_name
   }
@@ -58,11 +58,11 @@ resource "aws_route_table_association" "public_route_table" {
 // Security Group and its ingress/egress rules   
 // ======================================================
 resource "aws_security_group" "sec_group" {
-  Name = var.node_name
+  name = var.node_name
   description = "Allow inbound and outbound traffic"
   vpc_id = aws_vpc.main_vpc.id
 
-  tags {
+  tags = {
     Name = var.node_name
     Environment = var.node_name
   }
@@ -201,7 +201,7 @@ data "template_file" "install_gui_tpl" {
 data "template_file" "install_devops_tpl" {
   template = file("resources/cloudinit/install_devops_tpl.sh")
 
-  vars {
+  vars = {
     instanceName = var.node_name
   }
 }
@@ -252,7 +252,7 @@ resource "aws_spot_instance_request" "remotedesktop" {
 
   depends_on = [aws_internet_gateway.main_gw]
 
-  tags {
+  tags = {
     Name = "${var.node_name}_spot_instance"
     Environment = "${var.node_name}_spot_instance"
   }

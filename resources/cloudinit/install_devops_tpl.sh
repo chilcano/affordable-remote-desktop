@@ -51,7 +51,7 @@ printf "==> Applying workaround. Seeting AWS tags \n"
 # Work around the fact spot requests can't tag their instances
 REGION=$(ec2metadata --availability-zone | rev | cut -c 2- | rev)
 INSTANCE_ID=$(ec2metadata --instance-id)
-aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=${instancename}_spot" "Key=Environment,Value=${instancename}_spot"
+aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=${instanceName}_spot" "Key=Environment,Value=${instanceName}_spot"
 
 # Pass bridged IPv4 traffic to iptables chains
 service procps start

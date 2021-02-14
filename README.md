@@ -93,6 +93,8 @@ $ terraform apply \
   -var developer_cidr_blocks="83.45.103.161/32" \
   -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" \
   -var ami_owner="099720109477" 
+
+  terraform apply -var node_name="devops0" -var ssh_key="chilcan0" -var developer_cidr_blocks="83.45.103.161/32" -var ami_name_filter="ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*" -var ami_owner="099720109477" 
 ```
 
 Finally, if you want to create your customized AMI with `XFCE4` and `X2Go Server` pre-installed, then you are lucky because [I've shared Packer scripts to cook your own](resources/packer/). Once created your custom AMI with `XFCE4` and `X2Go Server` you can run Terraform in this way:
